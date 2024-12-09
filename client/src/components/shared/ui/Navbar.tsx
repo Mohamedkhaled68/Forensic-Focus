@@ -1,8 +1,10 @@
 import { CiSearch } from "react-icons/ci";
 import { iconic, notificationIcon } from "../../../assets";
 import { useState } from "react";
+import useUserStore from "../../../store/useUserStore";
 const Navbar = () => {
     const [notification, setNotification] = useState(null);
+    const user = useUserStore((state) => state.user);
     return (
         <>
             <nav className="h-[104px] w-[80%] fixed z-[1000] bg-white flex justify-center items-center">
@@ -34,8 +36,8 @@ const Navbar = () => {
                                     alt="iconic"
                                 />
                             </div>
-                            <p className="text-[16px] font-medium">
-                                Mohamed Khaled
+                            <p className="text-body-16-m capitalize">
+                                {user && user?.name}
                             </p>
                         </div>
                     </div>

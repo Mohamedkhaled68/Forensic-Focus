@@ -3,10 +3,10 @@ import { UserSignupData, UserLoginData } from "../types/auth";
 
 export const signupFormGroupData = [
     {
-        id: "username",
+        id: "name",
         placeholder: "i.e. Frank",
         label: "Username",
-        value: (formValues: UserSignupData) => formValues.username,
+        value: (formValues: UserSignupData) => formValues.name,
         type: "text",
     },
     {
@@ -22,6 +22,13 @@ export const signupFormGroupData = [
         label: "Password",
         value: (formValues: UserSignupData) => formValues.password,
         type: "password",
+    },
+    {
+        id: "collegeId",
+        placeholder: "Enter your college ID",
+        label: "College ID",
+        value: (formValues: UserSignupData) => formValues.collegeId,
+        type: "text",
     },
 ];
 

@@ -2,11 +2,11 @@ import { useState } from "react";
 import Card from "./Card";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
-import { availableCasesCards } from "../../utils/constants";
 import { rightArrow } from "../../assets";
 import { Navigation } from "swiper/modules";
+import { Case } from "../../types/quize";
 
-const AvailableCases = () => {
+const AvailableCases = ({ quizzes }: { quizzes: Case[] }) => {
     const [isPrevHidden, setIsPrevHidden] = useState(true); // Initially hide the prev button
     const [isNextHidden, setIsNextHidden] = useState(false); // Initially show the next button
 
@@ -73,24 +73,21 @@ const AvailableCases = () => {
                         nextEl: ".swiper-button-next-me",
                         prevEl: ".swiper-button-prev-me",
                     }}
-                    spaceBetween={100}
-                    slidesPerView={3}
+                    spaceBetween={10}
+                    slidesPerView={2}
                     onSlideChange={handleSlideChange} // Track slide change
                     onInit={handleSwiperInit} // Handle initial state based on Swiper's initial position
                 >
-                    {availableCasesCards.map(
-                        ({ author, level, progress, title, id }) => (
-                            <SwiperSlide className="pb-[16px]" key={id}>
-                                <Card
-                                    author={author}
-                                    level={level}
-                                    progress={progress}
-                                    title={title}
-                                    id={id}
-                                />
-                            </SwiperSlide>
-                        )
-                    )}
+                    {quizzes?.map(({ title, author, difficulty, id }) => (
+                        <SwiperSlide className="pb-[16px] " key={id}>
+                            <Card
+                                author={author}
+                                difficulty={difficulty}
+                                title={title}
+                                id={id}
+                            />
+                        </SwiperSlide>
+                    ))}
                 </Swiper>
             </div>
         </div>

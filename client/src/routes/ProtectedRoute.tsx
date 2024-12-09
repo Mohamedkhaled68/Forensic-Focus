@@ -1,12 +1,44 @@
 import { motion } from "framer-motion";
-import { Outlet } from "react-router-dom";
-import { Navbar, Sidebar } from "../components";
+import { Outlet, useNavigate } from "react-router-dom";
+import { Loading, Navbar, Sidebar } from "../components";
+import useTokenStore from "../store/useTokenStore";
+import { useEffect, useState } from "react";
+import useGetCurrentUser from "../hooks/auth/useGetCurrentUser";
+import useUserStore from "../store/useUserStore";
 
 interface Props {
     locationKey: string;
 }
 
 const ProtectedRoute: React.FC<Props> = ({ locationKey }) => {
+    const token = useTokenStore((state) => state.token);
+    const { mutateAsync: getUser } = useGetCurrentUser();
+    const setUser = useUserStore((state) => state.setUser);
+
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (token) {
+            getUser().then((res) => {
+                setUser(res.user);
+            });
+            setIsLoading(false);
+        } else {
+            navigate("/login");
+        }
+    }, [token]);
+
+    if (isLoading) {
+        return (
+            <>
+                <div className="w-full h-screen flex justify-center items-center">
+                    <Loading size="80" />
+                </div>
+            </>
+        );
+    }
+
     return (
         <>
             <Sidebar />

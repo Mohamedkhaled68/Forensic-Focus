@@ -1,0 +1,12 @@
+{
+    "scripts": {
+      "client": "npm run dev --prefix client",        
+      "server": "node server/src/server.js",
+        "dev": "concurrently \"npm run server\" \"npm run client\"",
+        "install-client": "npm install --prefix client",
+        "install-server": "npm install --prefix server"
+    },
+    "devDependencies": {
+        "concurrently": "^9.1.0"
+    }
+}

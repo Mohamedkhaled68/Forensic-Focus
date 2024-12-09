@@ -10,6 +10,7 @@ export interface FormGroupProps {
     type: string;
     containerStyle?: string;
     labelStyle?: string;
+    error?: string;
 }
 
 const FormGroup: React.FC<FormGroupProps> = ({
@@ -22,15 +23,21 @@ const FormGroup: React.FC<FormGroupProps> = ({
     type,
     containerStyle = "",
     labelStyle = "",
+    error = "",
 }) => {
     return (
         <div className={`flex flex-col gap-[16px] mb-[24px] ${containerStyle}`}>
-            <label
-                className={`text-body-18-m text-blue-900 ${labelStyle}`}
-                htmlFor={id}
-            >
-                {label}
-            </label>
+            <div className="flex justify-between items-end">
+                <label
+                    className={`text-body-18-m text-blue-900 ${labelStyle}`}
+                    htmlFor={id}
+                >
+                    {label}
+                </label>
+                <p className="text-secondary-1-600 text-body-14-r mt-1">
+                    {error}
+                </p>
+            </div>
             <input
                 onChange={onChange}
                 value={value}

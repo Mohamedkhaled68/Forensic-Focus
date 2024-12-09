@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { facebookIcon, googleIcon, logoIcon } from "../assets";
 import { UserSignupData } from "../types/auth";
-// import useSignup from "../hooks/useSignup";
+import useSignup from "../hooks/auth/useSignup";
 import { FormButton, FormGroup } from "../components";
 import { signupFormGroupData } from "../utils/constants";
 import { Link } from "react-router-dom";
 
 const initailState = {
-    username: "",
+    name: "",
     email: "",
     password: "",
+    collegeId: "",
 };
 
 const Signup = () => {
@@ -17,22 +18,66 @@ const Signup = () => {
     const [checkbox, setCheckbox] = useState(false);
     const [loading, setLoading] = useState(false);
     const [disabled, setDisabled] = useState(true);
+    const [errors, setErrors] = useState({
+        name: "",
+        email: "",
+        password: "",
+        collegeId: "",
+    });
 
-    // const { mutateAsync: signup } = useSignup();
+    const { mutateAsync: signup } = useSignup();
+
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    const validateForm = () => {
+        const newErrors = {
+            name:
+                formValues.name.length < 3
+                    ? "Username must be at least 3 characters long"
+                    : "",
+            email: !validateEmail(formValues.email)
+                ? "Please enter a valid email address"
+                : "",
+            password:
+                formValues.password.length < 6
+                    ? "Password must be at least 6 characters long"
+                    : "",
+            collegeId:
+                formValues.collegeId.length !== 10
+                    ? "College ID must be exactly 10 characters long"
+                    : "",
+        };
+
+        setErrors(newErrors);
+
+        return !Object.values(newErrors).some((error) => error !== "");
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormValues({ ...formValues, [name]: value });
+
+        // Clear specific error when user starts typing
+        if (errors[name as keyof typeof errors]) {
+            setErrors((prev) => ({ ...prev, [name]: "" }));
+        }
     };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        if (!validateForm()) {
+            return;
+        }
+
         setLoading(true);
         try {
-            // await signup(formValues);
-            await new Promise((resolve) => setTimeout(resolve, 5000));
-            console.log(formValues);
+            await signup(formValues);
         } catch (err: any) {
+            setLoading(false);
             console.log(err.message);
         } finally {
             setFormValues(initailState);
@@ -44,12 +89,13 @@ const Signup = () => {
         const isFilled = Object.values(formValues).every(
             (value) => value !== ""
         );
-        if (isFilled) {
+        if (isFilled && validateForm()) {
             setDisabled(false);
         } else {
             setDisabled(true);
         }
     }, [formValues]);
+
     return (
         <>
             <main className="w-full h-screen p-[40px]">
@@ -75,15 +121,21 @@ const Signup = () => {
                         <form className="flex flex-col" onSubmit={handleSubmit}>
                             {signupFormGroupData.map(
                                 ({ id, label, value, placeholder, type }) => (
-                                    <FormGroup
-                                        key={id}
-                                        id={id}
-                                        label={label}
-                                        value={value(formValues)}
-                                        placeholder={placeholder}
-                                        type={type}
-                                        onChange={handleInputChange}
-                                    />
+                                    <div key={id}>
+                                        <FormGroup
+                                            id={id}
+                                            label={label}
+                                            value={value(formValues)}
+                                            placeholder={placeholder}
+                                            type={type}
+                                            onChange={handleInputChange}
+                                            error={
+                                                errors[
+                                                    id as keyof typeof errors
+                                                ]
+                                            }
+                                        />
+                                    </div>
                                 )
                             )}
                             <div className="mt-[8px] flex items-center gap-[8px]">
@@ -101,7 +153,7 @@ const Signup = () => {
                                     className="text-body-14-m text-secondary-3-500 cursor-pointer"
                                     htmlFor="remember"
                                 >
-                                    Remeber Me
+                                    Remember Me
                                 </label>
                             </div>
                             <FormButton

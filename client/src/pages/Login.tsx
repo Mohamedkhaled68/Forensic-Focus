@@ -4,7 +4,7 @@ import { UserLoginData } from "../types/auth";
 import { FormButton, FormGroup } from "../components";
 import { LoginFormGroupData } from "../utils/constants";
 import { Link } from "react-router-dom";
-// import useLogin from "../hooks/useLogin";
+import useLogin from "../hooks/auth/useLogin";
 
 const initailState = {
     email: "",
@@ -16,22 +16,56 @@ const Login = () => {
     const [checkbox, setCheckbox] = useState(false);
     const [loading, setLoading] = useState(false);
     const [disabled, setDisabled] = useState(true);
+    const [errors, setErrors] = useState({
+        email: "",
+        password: "",
+    });
 
-    // const { mutateAsync: login } = useLogin();
+    const { mutateAsync: login } = useLogin();
+
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    const validateForm = () => {
+        const newErrors = {
+            email: !validateEmail(formValues.email)
+                ? "Please enter a valid email address"
+                : "",
+            password:
+                formValues.password.length < 6
+                    ? "Password must be at least 6 characters long"
+                    : "",
+        };
+
+        setErrors(newErrors);
+
+        return !Object.values(newErrors).some((error) => error !== "");
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormValues({ ...formValues, [name]: value });
+
+        // Clear specific error when user starts typing
+        if (errors[name as keyof typeof errors]) {
+            setErrors((prev) => ({ ...prev, [name]: "" }));
+        }
     };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        if (!validateForm()) {
+            return;
+        }
+
         setLoading(true);
         try {
-            // await login(formValues);
-            await new Promise((resolve) => setTimeout(resolve, 5000));
-            console.log(formValues);
+            await login(formValues);
         } catch (err: any) {
+            setLoading(false);
             console.log(err.message);
         } finally {
             setFormValues(initailState);
@@ -43,12 +77,13 @@ const Login = () => {
         const isFilled = Object.values(formValues).every(
             (value) => value !== ""
         );
-        if (isFilled) {
+        if (isFilled && validateForm()) {
             setDisabled(false);
         } else {
             setDisabled(true);
         }
     }, [formValues]);
+
     return (
         <>
             <main className="w-full h-screen p-[40px]">
@@ -61,29 +96,32 @@ const Login = () => {
                         />
                     </div>
                 </nav>
-                <div className="max-w-[750px] mx-auto pb-10">
+                <div className="flex flex-col gap-[12px] mb-[64px] justify-center items-center w-full">
+                    <h1 className="text-h1-40-m text-blue-900">Login</h1>
+                    <p className="text-h1-32-r text-blue-900 text-center">
+                        Welcome back! Please enter your details to log in.
+                    </p>
+                </div>
+                <div className="max-w-[600px] mx-auto pb-10">
                     <div className="flex flex-col">
-                        <div className="flex flex-col gap-[12px] mb-[64px] justify-center items-center w-full">
-                            <h1 className="text-h1-40-m text-blue-900">
-                                Login
-                            </h1>
-                            <p className="text-h1-32-r text-blue-900 text-center">
-                                Welcome back! Please enter your details to log
-                                in.
-                            </p>
-                        </div>
                         <form className="flex flex-col" onSubmit={handleSubmit}>
                             {LoginFormGroupData.map(
                                 ({ id, label, value, placeholder, type }) => (
-                                    <FormGroup
-                                        key={id}
-                                        id={id}
-                                        label={label}
-                                        value={value(formValues)}
-                                        placeholder={placeholder}
-                                        type={type}
-                                        onChange={handleInputChange}
-                                    />
+                                    <div key={id}>
+                                        <FormGroup
+                                            id={id}
+                                            label={label}
+                                            value={value(formValues)}
+                                            placeholder={placeholder}
+                                            type={type}
+                                            onChange={handleInputChange}
+                                            error={
+                                                errors[
+                                                    id as keyof typeof errors
+                                                ]
+                                            }
+                                        />
+                                    </div>
                                 )
                             )}
                             <div className="mt-[8px] flex items-center gap-[8px]">
@@ -101,7 +139,7 @@ const Login = () => {
                                     className="text-body-14-m text-secondary-3-500 cursor-pointer"
                                     htmlFor="remember"
                                 >
-                                    Remeber Me
+                                    Remember Me
                                 </label>
                             </div>
                             <FormButton

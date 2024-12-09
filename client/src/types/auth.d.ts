@@ -1,7 +1,8 @@
 export interface UserSignupData {
-    username: string;
+    name: string;
     email: string;
     password: string;
+    collegeId: string;
 }
 export interface UserLoginData {
     email: string;
