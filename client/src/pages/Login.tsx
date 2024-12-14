@@ -5,14 +5,15 @@ import { FormButton, FormGroup } from "../components";
 import { LoginFormGroupData } from "../utils/constants";
 import { Link } from "react-router-dom";
 import useLogin from "../hooks/auth/useLogin";
+import toast from "react-hot-toast";
 
-const initailState = {
+const initialState = {
     email: "",
     password: "",
 };
 
 const Login = () => {
-    const [formValues, setFormValues] = useState<UserLoginData>(initailState);
+    const [formValues, setFormValues] = useState<UserLoginData>(initialState);
     const [checkbox, setCheckbox] = useState(false);
     const [loading, setLoading] = useState(false);
     const [disabled, setDisabled] = useState(true);
@@ -24,14 +25,14 @@ const Login = () => {
     const { mutateAsync: login } = useLogin();
 
     const validateEmail = (email: string) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[^\s@]+@mans\.edu\.eg$/;
         return emailRegex.test(email);
     };
 
     const validateForm = () => {
         const newErrors = {
             email: !validateEmail(formValues.email)
-                ? "Please enter a valid email address"
+                ? "Please enter a valid mans.edu.eg email address"
                 : "",
             password:
                 formValues.password.length < 6
@@ -62,15 +63,20 @@ const Login = () => {
         }
 
         setLoading(true);
-        try {
-            await login(formValues);
-        } catch (err: any) {
-            setLoading(false);
-            console.log(err.message);
-        } finally {
-            setFormValues(initailState);
-            setLoading(false);
-        }
+        toast
+            .promise(login(formValues), {
+                loading: "Logging in...",
+                success: "Logged in successfully",
+                error: (err) => err.response.data.message,
+            })
+            .catch((errors) => {
+                setLoading(false);
+                console.log(errors);
+            })
+            .finally(() => {
+                setFormValues(initialState);
+                setLoading(false);
+            });
     };
 
     useEffect(() => {

@@ -3,6 +3,7 @@ import { iconic, profileAdd } from "../assets";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import useUserStore from "../store/useUserStore";
+import { FaUser } from "react-icons/fa";
 
 const Profile = () => {
     const user = useUserStore((state) => state.user);
@@ -16,12 +17,13 @@ const Profile = () => {
             <h1 className="text-h1-36-sb text-blue-900 mb-[56px]">Settings</h1>
             <div className="flex flex-col">
                 <div className="relative w-[192px] h-[192px] select-none mb-[48px]">
-                    <div className="w-[192px] h-[192px] rounded-full bg-neutral-1-500 overflow-hidden">
-                        <img
+                    <div className="w-[192px] h-[192px] rounded-full flex justify-center items-center bg-neutral-1-200 overflow-hidden">
+                        {/* <img
                             className="max-w-full object-cover z-10"
                             src={iconic}
                             alt="iconic"
-                        />
+                        /> */}
+                        <FaUser className="z-[100]" size={80} />
                     </div>
                     <span className="bg-blue-500 flex justify-center items-center absolute bottom-0 right-[15%] cursor-pointer w-[32px] h-[32px] rounded-full z-50">
                         <GoPlus color="white" size={25} />

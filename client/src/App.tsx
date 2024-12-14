@@ -16,6 +16,7 @@ import {
 } from "./routes";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
     const location = useLocation();
@@ -69,6 +70,7 @@ const App = () => {
                     />
                 </Route>
             </Routes>
+            <Toaster position="top-center" reverseOrder={false} />
         </motion.div>
     );
 };

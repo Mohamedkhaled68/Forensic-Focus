@@ -2,6 +2,7 @@ import { CiSearch } from "react-icons/ci";
 import { iconic, notificationIcon } from "../../../assets";
 import { useState } from "react";
 import useUserStore from "../../../store/useUserStore";
+import { FaUser } from "react-icons/fa";
 const Navbar = () => {
     const [notification, setNotification] = useState(null);
     const user = useUserStore((state) => state.user);
@@ -29,12 +30,13 @@ const Navbar = () => {
                             )}
                         </div>
                         <div className="flex justify-between items-center gap-[12px]">
-                            <div className="w-[40px] h-[40px] rounded-full bg-slate-300 flex justify-center items-center overflow-hidden">
-                                <img
+                            <div className="w-[40px] h-[40px] rounded-full bg-slate-300 flex justify-center items-center overflow-hidden hover:bg-neutral-1-200 duration-300 cursor-pointer bg-neutral-1-100">
+                                {/* <img
                                     className="max-w-full object-cover"
                                     src={iconic}
                                     alt="iconic"
-                                />
+                                /> */}
+                                <FaUser size={20} />
                             </div>
                             <p className="text-body-16-m capitalize">
                                 {user && user?.name}
